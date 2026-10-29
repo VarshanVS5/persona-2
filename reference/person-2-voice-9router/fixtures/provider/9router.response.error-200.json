@@ -1,0 +1,7 @@
+{
+  "error": {
+    "message": "No upstream provider is available for the requested model.",
+    "type": "upstream_unavailable",
+    "code": "no_provider"
+  }
+}

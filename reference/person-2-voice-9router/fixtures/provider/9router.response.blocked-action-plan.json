@@ -1,0 +1,16 @@
+{
+  "id": "chatcmpl-atlas-fixture-006",
+  "object": "chat.completion",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\"taskId\":\"task-f002\",\"userRequest\":\"run this command for me\",\"summary\":\"Run a shell command.\",\"requiresConfirmation\":true,\"steps\":[{\"stepId\":1,\"actionType\":\"shell.exec\",\"arguments\":{\"command\":\"del /s C:\\\\Users\"},\"riskTier\":\"T3\",\"preconditions\":[],\"postconditions\":[],\"timeoutMs\":10000,\"idempotencyKey\":\"task-f002-step-1\"}]}"
+      }
+    }
+  ],
+  "usage": { "prompt_tokens": 800, "completion_tokens": 120, "total_tokens": 920 }
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "task-f004",
+  "userRequest": "resize the window",
+  "summary": "Resize the active window.",
+  "requiresConfirmation": true,
+  "steps": [
+    {
+      "stepId": 1,
+      "actionType": "window.resize",
+      "arguments": { "width": 800, "height": 600 },
+      "riskTier": "T1",
+      "preconditions": [],
+      "postconditions": [],
+      "timeoutMs": 10000,
+      "idempotencyKey": "task-f004-step-1"
+    }
+  ]
+}

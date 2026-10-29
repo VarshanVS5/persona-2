@@ -1,0 +1,102 @@
+{
+  "description": "Expected PlanValidator outcome for every fixture in plans/. Person 4's integration tests and Person 1's policy tests can assert against this file instead of hardcoding codes. Enforced by services/atlas-core/tests/intent/test_published_fixtures.py, so a fixture cannot silently stop reproducing its rejection.",
+  "owner": "person-2",
+  "contractVersion": "1.0.0",
+  "rejectionCodeReference": "atlas.planner.validation.RejectionCode",
+  "plans": [
+    {
+      "file": "plans/plan.valid.app-open.json",
+      "valid": true,
+      "expectedCodes": [],
+      "highestRiskTier": "T1",
+      "requiresConfirmation": true,
+      "note": "The demo-path plan. Byte-compatible with packages/contracts/examples/plan.valid.json in shape; this is what the fixture planner emits for 'open my editor'."
+    },
+    {
+      "file": "plans/plan.invalid.blocked-shell-exec.json",
+      "valid": false,
+      "expectedCodes": ["BLOCKED_ACTION"],
+      "note": "Arbitrary shell execution. Blocked by category, so the user-facing reason is 'ATLAS cannot run shell commands' rather than 'unknown action'."
+    },
+    {
+      "file": "plans/plan.invalid.lowered-risk-tier.json",
+      "valid": false,
+      "expectedCodes": ["RISK_TIER_MISMATCH", "CONFIRMATION_LOWERED"],
+      "note": "The model declared T0 for an action the registry fixes at T1. Master PRD 7: tiers are assigned by local code."
+    },
+    {
+      "file": "plans/plan.invalid.unknown-action.json",
+      "valid": false,
+      "expectedCodes": ["UNKNOWN_ACTION"],
+      "note": "Plausible but unregistered action. Master PRD FR-03: unknown action types must be rejected."
+    },
+    {
+      "file": "plans/plan.invalid.waived-confirmation.json",
+      "valid": false,
+      "expectedCodes": ["CONFIRMATION_LOWERED"],
+      "note": "Correct tier, but consent waived. The model cannot waive user approval."
+    },
+    {
+      "file": "plans/plan.invalid.raised-timeout.json",
+      "valid": false,
+      "expectedCodes": ["TIMEOUT_OUT_OF_BOUNDS"],
+      "note": "timeoutMs above the registry ceiling for app.open (10000)."
+    },
+    {
+      "file": "plans/plan.invalid.missing-postcondition.json",
+      "valid": false,
+      "expectedCodes": ["MISSING_POSTCONDITION"],
+      "note": "Without window.exists the result cannot be verified, so success could never be evidenced."
+    },
+    {
+      "file": "plans/plan.invalid.extra-field.json",
+      "valid": false,
+      "expectedCodes": ["SCHEMA_INVALID"],
+      "note": "additionalProperties:false stops an invented field such as 'executeWithoutApproval' from reaching the runtime."
+    },
+    {
+      "file": "plans/plan.invalid.bad-arguments.json",
+      "valid": false,
+      "expectedCodes": ["INVALID_ARGUMENTS"],
+      "note": "An extra 'commandLine' argument is how an app.open step would try to become shell execution. argumentsSchema forbids it."
+    },
+    {
+      "file": "plans/plan.invalid.duplicate-idempotency-key.json",
+      "valid": false,
+      "expectedCodes": ["DUPLICATE_IDEMPOTENCY_KEY"],
+      "note": "Duplicate keys make retry-safety undecidable: a timeout could not be distinguished from a second intended action."
+    }
+  ],
+  "providerFixtures": [
+    {
+      "file": "provider/9router.response.valid-plan.json",
+      "kind": "success",
+      "note": "OpenAI-compatible success body whose message content is a valid plan for taskId task-f001."
+    },
+    {
+      "file": "provider/9router.response.prose-wrapped-plan.json",
+      "kind": "success",
+      "note": "Plan wrapped in prose and a markdown fence. The planner must still extract it."
+    },
+    {
+      "file": "provider/9router.response.clarification.json",
+      "kind": "success",
+      "note": "Model asks a question instead of planning (Master PRD FR-04)."
+    },
+    {
+      "file": "provider/9router.response.malformed.json",
+      "kind": "malformed",
+      "note": "HTTP 200 with no choices[0].message.content. Must produce MALFORMED_RESPONSE, never an empty success."
+    },
+    {
+      "file": "provider/9router.response.error-200.json",
+      "kind": "malformed",
+      "note": "HTTP 200 carrying an application error. Must produce a provider failure, not a success."
+    },
+    {
+      "file": "provider/9router.response.blocked-action-plan.json",
+      "kind": "success",
+      "note": "A well-formed reply that reaches for a blocked action. Proves the gate, not the prompt, is the defence."
+    }
+  ]
+}

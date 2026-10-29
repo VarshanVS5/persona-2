@@ -1,0 +1,7 @@
+{
+  "id": "chatcmpl-atlas-fixture-004",
+  "object": "chat.completion",
+  "model": "fixture-model",
+  "choices": [{ "index": 0, "finish_reason": "stop", "message": { "role": "assistant" } }],
+  "usage": { "prompt_tokens": 790, "completion_tokens": 0, "total_tokens": 790 }
+}

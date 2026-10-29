@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-atlas.local/contracts/events.schema.json",
+  "title": "AtlasEvent",
+  "description": "Versioned, typed event envelope (Common PRD 4.2-4.3, Master PRD 10.2-10.3). Contract version 1.0.0. Owner: project owner. Events must never contain API keys, passwords, or unnecessary private content.",
+  "x-contract-version": "1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "taskId", "timestamp", "type", "payload"],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "type": { "$ref": "#/$defs/EventType" },
+    "payload": { "type": "object" }
+  },
+  "allOf": [
+    { "if": { "properties": { "type": { "const": "transcript" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/TranscriptPayload" } } } },
+    { "if": { "properties": { "type": { "const": "plan_ready" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/PlanReadyPayload" } } } },
+    { "if": { "properties": { "type": { "const": "clarification_required" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/ClarificationPayload" } } } },
+    { "if": { "properties": { "type": { "const": "confirmation_required" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/ConfirmationPayload" } } } },
+    { "if": { "properties": { "type": { "const": "step_started" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/StepPayload" } } } },
+    { "if": { "properties": { "type": { "const": "verification_passed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/StepPayload" } } } },
+    { "if": { "properties": { "type": { "const": "verification_failed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/StepFailurePayload" } } } },
+    { "if": { "properties": { "type": { "const": "task_completed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/TerminalPayload" } } } },
+    { "if": { "properties": { "type": { "const": "task_failed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/TerminalPayload" } } } },
+    { "if": { "properties": { "type": { "const": "task_cancelled" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/TerminalPayload" } } } },
+    { "if": { "properties": { "type": { "const": "provider_error" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/ProviderErrorPayload" } } } }
+  ],
+  "$defs": {
+    "EventType": {
+      "type": "string",
+      "enum": [
+        "transcript",
+        "plan_ready",
+        "clarification_required",
+        "confirmation_required",
+        "step_started",
+        "verification_passed",
+        "verification_failed",
+        "task_completed",
+        "task_failed",
+        "task_cancelled",
+        "provider_error"
+      ]
+    },
+    "TaskStatus": {
+      "type": "string",
+      "enum": [
+        "QUEUED",
+        "PLANNING",
+        "AWAITING_CONFIRMATION",
+        "RUNNING",
+        "VERIFYING",
+        "CANCELLING",
+        "SUCCEEDED",
+        "FAILED",
+        "PARTIAL",
+        "CANCELLED"
+      ]
+    },
+    "TranscriptPayload": {
+      "type": "object",
+      "required": ["text", "isFinal", "source"],
+      "properties": {
+        "text": { "type": "string" },
+        "isFinal": { "type": "boolean" },
+        "source": { "type": "string", "enum": ["voice", "text"] }
+      }
+    },
+    "PlanReadyPayload": {
+      "type": "object",
+      "required": ["plan", "planDigest"],
+      "properties": {
+        "plan": { "$ref": "task-plan.schema.json" },
+        "planDigest": { "type": "string", "description": "Digest of the exact plan the user reviews; confirm must echo it." }
+      }
+    },
+    "ClarificationPayload": {
+      "type": "object",
+      "required": ["question"],
+      "properties": {
+        "question": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ConfirmationPayload": {
+      "type": "object",
+      "required": ["planDigest", "highestRiskTier"],
+      "properties": {
+        "planDigest": { "type": "string" },
+        "highestRiskTier": { "type": "string", "enum": ["T0", "T1", "T2", "T3"] }
+      }
+    },
+    "StepPayload": {
+      "type": "object",
+      "required": ["stepId", "actionType"],
+      "properties": {
+        "stepId": { "type": "integer", "minimum": 1 },
+        "actionType": { "type": "string" },
+        "status": { "$ref": "#/$defs/TaskStatus" }
+      }
+    },
+    "StepFailurePayload": {
+      "type": "object",
+      "required": ["stepId", "actionType", "reason"],
+      "properties": {
+        "stepId": { "type": "integer", "minimum": 1 },
+        "actionType": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "$ref": "#/$defs/TaskStatus" }
+      }
+    },
+    "TerminalPayload": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "$ref": "#/$defs/TaskStatus" },
+        "reason": { "type": "string" },
+        "failedStepId": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "ProviderErrorPayload": {
+      "type": "object",
+      "required": ["provider", "code", "retryable"],
+      "properties": {
+        "provider": { "type": "string", "enum": ["9router", "aws-transcribe", "aws-polly"] },
+        "code": { "type": "string" },
+        "message": { "type": "string", "description": "Redacted; never contains keys or secrets." },
+        "retryable": { "type": "boolean" }
+      }
+    }
+  }
+}

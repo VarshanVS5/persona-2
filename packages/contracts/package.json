@@ -1,0 +1,6 @@
+{
+  "name": "@atlas/contracts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Shared Project ATLAS contracts (JSON Schemas, action registry, examples). Owner: project owner."
+}

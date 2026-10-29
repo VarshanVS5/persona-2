@@ -1,0 +1,18 @@
+{
+  "taskId": "task-f007",
+  "userRequest": "open my editor",
+  "summary": "Open the allowlisted application 'notepad'.",
+  "requiresConfirmation": true,
+  "steps": [
+    {
+      "stepId": 1,
+      "actionType": "app.open",
+      "arguments": { "appId": "notepad" },
+      "riskTier": "T1",
+      "preconditions": [{ "type": "app.allowlisted", "args": { "appId": "notepad" } }],
+      "postconditions": [],
+      "timeoutMs": 10000,
+      "idempotencyKey": "task-f007-step-1"
+    }
+  ]
+}

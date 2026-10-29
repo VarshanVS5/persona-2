@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "task-0001",
+  "timestamp": "2025-01-01T10:00:05Z",
+  "type": "task_completed",
+  "payload": {
+    "status": "SUCCEEDED"
+  }
+}

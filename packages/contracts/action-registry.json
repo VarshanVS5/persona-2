@@ -1,0 +1,36 @@
+{
+  "contractVersion": "1.0.0",
+  "description": "Shared action registry (Master PRD FR-03, section 7). Only actions listed under 'actions' may execute. Owner: project owner; Person 1 proposes additions via PR.",
+  "actions": [
+    {
+      "actionType": "app.open",
+      "description": "Open one allowlisted editor application (ATLAS_ALLOWED_APPS).",
+      "riskTier": "T1",
+      "argumentsSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["appId"],
+        "properties": {
+          "appId": { "type": "string", "description": "Identifier that must appear in ATLAS_ALLOWED_APPS." }
+        }
+      },
+      "preconditions": [
+        { "type": "app.allowlisted", "args": { "argument": "appId" } }
+      ],
+      "postconditions": [
+        { "type": "window.exists", "args": { "argument": "appId" } }
+      ],
+      "timeoutMs": 10000,
+      "onFailure": "stop_and_report"
+    }
+  ],
+  "blocked": [
+    { "category": "credential.entry", "reason": "Password, MFA, or other credential entry." },
+    { "category": "shell.exec", "reason": "Arbitrary shell or terminal execution." },
+    { "category": "security.uac_bypass", "reason": "UAC, administrator, or security-prompt bypass." },
+    { "category": "file.delete_unrestricted", "reason": "Unrestricted file deletion." },
+    { "category": "message.send", "reason": "Sending, posting, or publishing messages on the user's behalf." },
+    { "category": "payment.purchase", "reason": "Purchases, payments, or financial transactions." },
+    { "category": "security.settings_change", "reason": "Changing security or privacy settings." }
+  ]
+}

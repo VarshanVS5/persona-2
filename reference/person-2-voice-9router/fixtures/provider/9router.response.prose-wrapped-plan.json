@@ -1,0 +1,16 @@
+{
+  "id": "chatcmpl-atlas-fixture-002",
+  "object": "chat.completion",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "Sure, here is the plan you asked for:\n\n```json\n{\"taskId\":\"task-f001\",\"userRequest\":\"open my editor\",\"summary\":\"Open the allowlisted application 'notepad'.\",\"requiresConfirmation\":true,\"steps\":[{\"stepId\":1,\"actionType\":\"app.open\",\"arguments\":{\"appId\":\"notepad\"},\"riskTier\":\"T1\",\"preconditions\":[{\"type\":\"app.allowlisted\",\"args\":{\"appId\":\"notepad\"}}],\"postconditions\":[{\"type\":\"window.exists\",\"args\":{\"appId\":\"notepad\"}}],\"timeoutMs\":10000,\"idempotencyKey\":\"task-f001-step-1\"}]}\n```\n\nLet me know if you want anything changed."
+      }
+    }
+  ],
+  "usage": { "prompt_tokens": 820, "completion_tokens": 230, "total_tokens": 1050 }
+}

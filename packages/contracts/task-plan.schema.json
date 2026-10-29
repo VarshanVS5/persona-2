@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-atlas.local/contracts/task-plan.schema.json",
+  "title": "TaskPlan",
+  "description": "Authoritative task plan contract (Common PRD 4.1, Master PRD 10.1). Contract version 1.0.0. Owner: project owner.",
+  "x-contract-version": "1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["taskId", "userRequest", "summary", "requiresConfirmation", "steps"],
+  "properties": {
+    "taskId": { "type": "string", "minLength": 1 },
+    "userRequest": { "type": "string" },
+    "summary": { "type": "string" },
+    "requiresConfirmation": { "type": "boolean" },
+    "steps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ActionStep" }
+    }
+  },
+  "$defs": {
+    "RiskTier": {
+      "type": "string",
+      "enum": ["T0", "T1", "T2", "T3"]
+    },
+    "Condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "args"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "args": { "type": "object" }
+      }
+    },
+    "ActionStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stepId",
+        "actionType",
+        "arguments",
+        "riskTier",
+        "preconditions",
+        "postconditions",
+        "timeoutMs",
+        "idempotencyKey"
+      ],
+      "properties": {
+        "stepId": { "type": "integer", "minimum": 1 },
+        "actionType": {
+          "type": "string",
+          "description": "Must be an actionType listed in action-registry.json. Schema validity alone never authorizes execution."
+        },
+        "arguments": { "type": "object" },
+        "riskTier": { "$ref": "#/$defs/RiskTier" },
+        "preconditions": { "type": "array", "items": { "$ref": "#/$defs/Condition" } },
+        "postconditions": { "type": "array", "items": { "$ref": "#/$defs/Condition" } },
+        "timeoutMs": { "type": "integer", "minimum": 1 },
+        "idempotencyKey": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

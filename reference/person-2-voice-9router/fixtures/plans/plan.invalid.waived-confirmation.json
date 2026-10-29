@@ -1,0 +1,18 @@
+{
+  "taskId": "task-f005",
+  "userRequest": "open my editor without asking me",
+  "summary": "Open the allowlisted application 'notepad'.",
+  "requiresConfirmation": false,
+  "steps": [
+    {
+      "stepId": 1,
+      "actionType": "app.open",
+      "arguments": { "appId": "notepad" },
+      "riskTier": "T1",
+      "preconditions": [{ "type": "app.allowlisted", "args": { "appId": "notepad" } }],
+      "postconditions": [{ "type": "window.exists", "args": { "appId": "notepad" } }],
+      "timeoutMs": 10000,
+      "idempotencyKey": "task-f005-step-1"
+    }
+  ]
+}
